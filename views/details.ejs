@@ -1,0 +1,78 @@
+<html lang="en">
+    <%- include("partials/header") %>
+
+<body>
+
+  <div class="details content">
+    <h2><%= blog.title %></h2>
+    <div class="content">
+      <p class="yellow"><%= blog.body %></p>
+    </div>
+    <% if (user.email=== 'g1@gmail.com') {%>
+    <a class="delete" data-doc="<%= blog._id %>">
+      <img src="/trashcan.svg" alt="delete icon">
+    </a>
+    <% } %>
+    <div >
+      <form action="/data" style="display: none;" id="open">
+        <label for="title">Title</label>
+        <input id="title1" type="text" name="title" value="<%= blog.title %>">
+        <label for="snippet">Snippet</label>
+        <input id="snippet1" type="text" name="snippet" value="<%= blog.snippet %>">
+        <label for="body">Body</label>
+        <input id="body1" type="text" name="body" value="<%= blog.body %>">
+        <input type="hidden" id="hidden1" value="<%= blog.id %>">
+        <button onclick="send()">Update</button>
+        <button id="cancel" onclick="disapper()">Cancel Update</button>
+      </form>
+    </div>
+    <p id="close" style="cursor: pointer; font-weight: bolder; margin: 10px 0;" onclick="show()">Update Blog Details</p>
+    <a href="/data" id="back" class="btn" style="cursor: pointer;">Go back</a>
+  </div>
+
+  <%- include("partials/footer.ejs") %>
+
+  <script>
+
+    const show = () => {
+      document.getElementById('open').style.display= "block";
+      document.getElementById('close').style.display= "none";
+    } 
+
+    const disapper = () => {
+      document.getElementById('open').style.display= "none";
+      document.getElementById('close').style.display= "block";
+    }
+
+
+    const send = () => {
+      const title = document.getElementById('title1').value;
+      const snippet = document.getElementById('snippet1').value;
+      const body = document.getElementById('body1').value;
+      const hidden2 = document.getElementById('hidden1').value;
+
+      const tr = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, snippet, body })
+      }
+      fetch('/'+hidden2, tr)
+    }
+
+
+    const trashcan = document.querySelector('a.delete');
+
+    trashcan.addEventListener('click', (e) => {
+      const endpoint = `/${trashcan.dataset.doc}`;
+
+      fetch(endpoint, {
+        method: 'DELETE',
+      })
+      .then(response => response.json())
+      .then(data => window.location.href = data.redirect)
+      .catch(err => console.log(err));
+    });
+    
+  </script>
+</body>
+</html>
